@@ -76,13 +76,31 @@ public class ConfigBuilder {
     /**
      * 数据库配置信息
      */
-    private final DataSourceConfig dataSourceConfig;
+    private DataSourceConfig dataSourceConfig = null;
 
     /**
      * 数据查询实例
+     *
      * @since 3.5.3
      */
-    private final IDatabaseQuery databaseQuery;
+    private IDatabaseQuery databaseQuery = null;
+
+    /**
+     * 在构造器中处理配置
+     *
+     * @param packageConfig  包配置
+     * @param strategyConfig 表配置
+     * @param templateConfig 模板配置
+     * @param globalConfig   全局配置
+     */
+    public ConfigBuilder(@Nullable PackageConfig packageConfig, @Nullable StrategyConfig strategyConfig, @Nullable TemplateConfig templateConfig, @Nullable GlobalConfig globalConfig, @Nullable InjectionConfig injectionConfig) {
+        this.strategyConfig = Optional.ofNullable(strategyConfig).orElseGet(GeneratorBuilder::strategyConfig);
+        this.globalConfig = Optional.ofNullable(globalConfig).orElseGet(GeneratorBuilder::globalConfig);
+        this.templateConfig = Optional.ofNullable(templateConfig).orElseGet(GeneratorBuilder::templateConfig);
+        this.packageConfig = Optional.ofNullable(packageConfig).orElseGet(GeneratorBuilder::packageConfig);
+        this.injectionConfig = Optional.ofNullable(injectionConfig).orElseGet(GeneratorBuilder::injectionConfig);
+        this.pathInfo.putAll(new PathInfoHandler(this.globalConfig, this.templateConfig, this.packageConfig).getPathInfo());
+    }
 
     /**
      * 在构造器中处理配置
@@ -93,9 +111,7 @@ public class ConfigBuilder {
      * @param templateConfig   模板配置
      * @param globalConfig     全局配置
      */
-    public ConfigBuilder(@Nullable PackageConfig packageConfig, @NotNull DataSourceConfig dataSourceConfig,
-                         @Nullable StrategyConfig strategyConfig, @Nullable TemplateConfig templateConfig,
-                         @Nullable GlobalConfig globalConfig, @Nullable InjectionConfig injectionConfig) {
+    public ConfigBuilder(@Nullable PackageConfig packageConfig, @NotNull DataSourceConfig dataSourceConfig, @Nullable StrategyConfig strategyConfig, @Nullable TemplateConfig templateConfig, @Nullable GlobalConfig globalConfig, @Nullable InjectionConfig injectionConfig) {
         this.dataSourceConfig = dataSourceConfig;
         this.strategyConfig = Optional.ofNullable(strategyConfig).orElseGet(GeneratorBuilder::strategyConfig);
         this.globalConfig = Optional.ofNullable(globalConfig).orElseGet(GeneratorBuilder::globalConfig);
@@ -132,6 +148,12 @@ public class ConfigBuilder {
     @NotNull
     public ConfigBuilder setGlobalConfig(@NotNull GlobalConfig globalConfig) {
         this.globalConfig = globalConfig;
+        return this;
+    }
+
+    @NotNull
+    public ConfigBuilder setTableInfoList(@NotNull List<TableInfo> tableInfoList) {
+        this.tableInfoList.addAll(tableInfoList);
         return this;
     }
 

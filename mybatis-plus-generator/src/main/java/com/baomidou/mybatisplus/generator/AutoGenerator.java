@@ -65,8 +65,9 @@ public class AutoGenerator {
      */
     private GlobalConfig globalConfig;
 
-    private AutoGenerator() {
+    public AutoGenerator(ConfigBuilder config) {
         // 不推荐使用
+        this.config = config;
     }
 
     /**

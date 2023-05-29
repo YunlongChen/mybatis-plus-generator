@@ -151,8 +151,7 @@ public class TableField {
      */
     public TableField setPropertyName(@NotNull String propertyName, @NotNull IColumnType columnType) {
         this.columnType = columnType;
-        if (entity.isBooleanColumnRemoveIsPrefix()
-            && "boolean".equalsIgnoreCase(this.getPropertyType()) && propertyName.startsWith("is")) {
+        if (entity.isBooleanColumnRemoveIsPrefix() && "boolean".equalsIgnoreCase(this.getPropertyType()) && propertyName.startsWith("is")) {
             this.convert = true;
             this.propertyName = StringUtils.removePrefixAfterPrefixToLower(propertyName, 2);
             return this;
@@ -222,8 +221,7 @@ public class TableField {
     public boolean isVersionField() {
         String propertyName = entity.getVersionPropertyName();
         String columnName = entity.getVersionColumnName();
-        return StringUtils.isNotBlank(propertyName) && this.propertyName.equals(propertyName)
-            || StringUtils.isNotBlank(columnName) && this.name.equalsIgnoreCase(columnName);
+        return StringUtils.isNotBlank(propertyName) && this.propertyName.equals(propertyName) || StringUtils.isNotBlank(columnName) && this.name.equalsIgnoreCase(columnName);
     }
 
     /**
@@ -235,8 +233,7 @@ public class TableField {
     public boolean isLogicDeleteField() {
         String propertyName = entity.getLogicDeletePropertyName();
         String columnName = entity.getLogicDeleteColumnName();
-        return StringUtils.isNotBlank(propertyName) && this.propertyName.equals(propertyName)
-            || StringUtils.isNotBlank(columnName) && this.name.equalsIgnoreCase(columnName);
+        return StringUtils.isNotBlank(propertyName) && this.propertyName.equals(propertyName) || StringUtils.isNotBlank(columnName) && this.name.equalsIgnoreCase(columnName);
     }
 
     /**
@@ -263,14 +260,16 @@ public class TableField {
 
     public TableField setComment(String comment) {
         //TODO 暂时挪动到这
-        this.comment = this.globalConfig.isSwagger()
-            && StringUtils.isNotBlank(comment) ? comment.replace("\"", "\\\"") : comment;
+        this.comment = this.globalConfig.isSwagger() && StringUtils.isNotBlank(comment) ? comment.replace("\"", "\\\"") : comment;
         return this;
     }
 
     public TableField setColumnName(String columnName) {
         this.columnName = columnName;
-        IKeyWordsHandler keyWordsHandler = dataSourceConfig.getKeyWordsHandler();
+        IKeyWordsHandler keyWordsHandler = null;
+        if (dataSourceConfig != null) {
+            keyWordsHandler = dataSourceConfig.getKeyWordsHandler();
+        }
         if (keyWordsHandler != null && keyWordsHandler.isKeyWords(columnName)) {
             this.keyWords = true;
             this.columnName = keyWordsHandler.formatColumn(columnName);
@@ -319,9 +318,7 @@ public class TableField {
         if (StringUtils.isBlank(fill)) {
             entity.getTableFillList().stream()
                 //忽略大写字段问题
-                .filter(tf -> tf instanceof Column && tf.getName().equalsIgnoreCase(name)
-                    || tf instanceof Property && tf.getName().equals(propertyName))
-                .findFirst().ifPresent(tf -> this.fill = tf.getFieldFill().name());
+                .filter(tf -> tf instanceof Column && tf.getName().equalsIgnoreCase(name) || tf instanceof Property && tf.getName().equals(propertyName)).findFirst().ifPresent(tf -> this.fill = tf.getFieldFill().name());
         }
         return fill;
     }
@@ -433,16 +430,7 @@ public class TableField {
 
         @Override
         public String toString() {
-            return "MetaInfo{" +
-                "tableName=" + tableName +
-                ", columnName=" + columnName +
-                ", length=" + length +
-                ", nullable=" + nullable +
-                ", remarks='" + remarks + '\'' +
-                ", defaultValue='" + defaultValue + '\'' +
-                ", scale=" + scale +
-                ", jdbcType=" + jdbcType +
-                '}';
+            return "MetaInfo{" + "tableName=" + tableName + ", columnName=" + columnName + ", length=" + length + ", nullable=" + nullable + ", remarks='" + remarks + '\'' + ", defaultValue='" + defaultValue + '\'' + ", scale=" + scale + ", jdbcType=" + jdbcType + '}';
         }
     }
 }
